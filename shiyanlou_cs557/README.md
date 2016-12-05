@@ -104,21 +104,21 @@ public:
 #include <cstdlib>
 
 int main() {
-    
+
     std::srand((unsigned)std::time(0)); // 使用当前时间作为随机数种子
 
     int total_service_time = 240;       // 按分钟计算
     int window_num         = 4;
     int simulate_num       = 100000;    // 模拟次数
-    
+
     QueueSystem system(total_service_time, window_num);
     system.simulate(simulate_num);
-    
+
     std::cout << "The average time of customer stay in bank: "
               << system.getAvgStayTime() << std::endl;
     std::cout << "The number of customer arrive bank per minute: "
               << system.getAvgCustomers() << std::endl;
-    
+
     return 0;
 }
 ```
@@ -174,7 +174,7 @@ struct Node {
     int arrive_time;
     int duration;
     struct Node *next;
-    
+
     // 默认到达事件为0，需要服务的事件是随机的
     Node(int arrive_time = 0,
          int duration = Random::uniform(RANDOM_PARAMETER)):
@@ -197,7 +197,6 @@ typedef struct Node Customer;
 //  ServiceWindow.hpp
 //  QueueSystem
 //
-
 #ifndef ServiceWindow_hpp
 #define ServiceWindow_hpp
 
@@ -220,7 +219,7 @@ public:
             return false;
         }
     }
-    inline void serveCustomer(Customer &amp;customer) {
+    inline void serveCustomer(Customer &customer) {
         this->customer = customer;
     }
     inline void setBusy() {
@@ -272,12 +271,12 @@ private:
 
 struct Event {
     int occur_time;
-    
+
     // 使用 -1 表示到达事件, >=0 表示离开事件, 同时数值表示所离开的服务窗口
     int event_type;
-    
+
     Event* next;
-    
+
     // 默认为到达事件，发生事件随机
     Event(int occur_time = Random::uniform(RANDOM_PARAMETER),
           int event_type = -1):
@@ -317,9 +316,9 @@ public:
     Queue();
     ~Queue();
     void clearQueue();             // 清空队列
-    T* enqueue(T &amp;node);
+    T* enqueue(T &node);
     T* dequeue();
-    T* orderEnqueue(Event &amp;event); // 只适用于事件入队
+    T* orderEnqueue(Event &event); // 只适用于事件入队
     int  length();
 private:
     T *front;  // 头结点
@@ -386,61 +385,61 @@ private:
 #include "ServiceWindow.hpp"
 
 class QueueSystem {
-    
+
 public:
     // 初始化队列系统
     QueueSystem(int total_service_time, int window_num);
-    
+
     // 销毁
     ~QueueSystem();
-    
+
     // 启动模拟
     void simulate(int simulate_num);
-    
+
     inline double getAvgStayTime() const {
         return avg_stay_time;
     }
     inline double getAvgCustomers() const {
         return avg_customers;
     }
-    
+
 private:
     // 让队列系统运行一次
     double run();
-    
+
     // 初始化各种参数
     void init();
-    
+
     // 清空各种参数
     void end();
-    
+
     // 获得空闲窗口索引
     int getIdleServiceWindow();
-    
+
     // 处理顾客到达事件
     void customerArrived();
-    
+
     // 处理顾客离开事件
     void customerDeparture();
-    
+
     // 服务窗口的总数
     int window_num;
-    
+
     // 总的营业时间
     int total_service_time;
-    
+
     // 顾客的逗留总时间
     int customer_stay_time;
-    
+
     // 总顾客数
     int total_customer_num;
-    
+
     // 核心成员
     ServiceWindow*  windows;
     Queue<Customer> customer_list;
     Queue<Event>       event_list;
     Event*          current_event;
-    
+
     // 给外部调用的结果
     double avg_customers;
     double avg_stay_time;
@@ -554,7 +553,7 @@ Queue() {
     if (!this->front) {
         exit(-1);
     }
-    
+
     // 初始化节点
     this->front->next = NULL;
     this->rear = this->front;
@@ -563,7 +562,7 @@ Queue() {
 ~Queue() {
     // 清空当前队列中的元素
     this->clearQueue();
-    
+
     // 再删除头结点
     delete this->front;
 }
@@ -579,7 +578,7 @@ Queue() {
 
 // 入队时，传递节点指针，外部数据不应该由此类进行管理，所以将数据拷贝一份
 // 并返回头指针
-T* enqueue(T &amp;node) {
+T* enqueue(T &node) {
     T *new_node = new T;
     if (!new_node) {
         exit(-1);
@@ -595,11 +594,11 @@ T* dequeue() {
     if (!this->front->next) {
         return NULL;
     }
-    
+
     T *temp_node;
     temp_node = this->front->next;
     this->front->next = temp_node->next;
-    
+
     // 如果队列中只有一个节点，那么记得将队尾节点指针置为头结点
     if (this->rear == temp_node) {
         this->rear = this->front;
@@ -617,31 +616,31 @@ T* dequeue() {
 //
 
 // 事件时的顺序插入，事件有自身的发生事件，应该按事件顺序进行插入
-T* orderEnqueue(Event &amp;event) {
+T* orderEnqueue(Event &event) {
     Event* temp = new Event;
     if (!temp) {
         exit(-1);
     }
     *temp = event;
-    
+
     // 如果这个列表里没有事件, 则把 temp 事件插入
     if (!this->front->next) {
         this->enqueue(*temp);
         return this->front;
     }
-    
+
     // 按时间顺序插入
     Event *temp_event_list = this->front;
-    
+
     // 如果有下一个事件，且下一个事件的发生时间小于要插入的时间的时间，则继续将指针后移
-    while (temp_event_list->next &amp;&amp; temp_event_list->next->occur_time < event.occur_time) {
+    while (temp_event_list->next && temp_event_list->next->occur_time < event.occur_time) {
         temp_event_list = temp_event_list->next;
     }
-    
+
     // 将事件插入到队列中
     temp->next = temp_event_list->next;
     temp_event_list->next = temp;
-    
+
     // 返回队列头指针
     return this->front;
 }
@@ -677,13 +676,13 @@ int  length() {
 
 void clearQueue() {
     T *temp_node;
-    
+
     while (this->front->next) {
         temp_node = this->front->next;
         this->front->next = temp_node->next;
         delete temp_node;
     }
-    
+
     this->front->next = NULL;
     this->rear = this->front;
 }
@@ -747,7 +746,7 @@ void QueueSystem::simulate(int simulate_num) {
         // 每一遍运行，我们都要增加在这一次模拟中，顾客逗留了多久
         sum += run();
     }
-    
+
     // 计算平均逗留时间
     avg_stay_time = (double)sum / simulate_num;
     // 计算每分钟平均顾客数
@@ -795,7 +794,7 @@ void QueueSystem::end() {
     }
     // 顾客队列清空
     customer_list.clearQueue();
-    
+
     // 事件列表清空
     event_list.clearQueue();
 
@@ -828,11 +827,11 @@ void QueueSystem::end() {
 
 // 处理用户到达事件
 void QueueSystem::customerArrived() {
-    
+
     total_customer_num++;
-    
+
     // 生成下一个顾客的到达事件
-    
+
     int intertime = Random::uniform(100);  // 下一个顾客到达的时间间隔，我们假设100分钟内一定会出现一个顾客
     // 下一个顾客的到达时间 = 当前时间的发生时间 + 下一个顾客到达的时间间隔
     int time = current_event->occur_time + intertime;
@@ -842,22 +841,22 @@ void QueueSystem::customerArrived() {
     if (time < total_service_time) {
         event_list.orderEnqueue(temp_event);
     } // 否则不列入事件表，且不加入 cusomer_list
-    
-    
+
+
     // 处理当前事件中到达的顾客
     Customer *customer = new Customer(current_event->occur_time);
     if (!customer) {
         exit(-1);
     }
     customer_list.enqueue(*customer);
-    
+
     // 如果当前窗口有空闲窗口，那么直接将这个顾客送入服务窗口
     int idleIndex = getIdleServiceWindow();
     if (idleIndex >= 0) {
         customer = customer_list.dequeue();
         windows[idleIndex].serveCustomer(*customer);
         windows[idleIndex].setBusy();
-        
+
         // 顾客到窗口开始服务时，就需要插入这个顾客的一个离开事件到 event_list 中
         // 离开事件的发生时间 = 当前时间事件的发生时间 + 服务时间
         Event temp_event(current_event->occur_time + customer->duration, idleIndex);
@@ -910,20 +909,20 @@ void QueueSystem::customerDeparture() {
             Customer *customer;
             customer = customer_list.dequeue();
             windows[current_event->event_type].serveCustomer(*customer);
-            
+
             // 离开事件
             Event temp_event(
                 current_event->occur_time + customer->duration,
                 current_event->event_type
             );
             event_list.orderEnqueue(temp_event);
-            
+
             delete customer;
         } else {
             // 如果队列没有人，且当前窗口的顾客离开了，则这个窗口是空闲的
             windows[current_event->event_type].setIdle();
         }
-        
+
     }
 }
 ```
@@ -931,7 +930,7 @@ void QueueSystem::customerDeparture() {
 至此，我们修改了 `Queue.hpp` ，增加了 `QueueSystem.cpp`。我们来完成最后的运行工作：
 
 ```bash
-$ g++ -std=c++11 main.cpp QueueSystem.cpp -o main 
+$ g++ -std=c++11 main.cpp QueueSystem.cpp -o main
 $ ./main
 ```
 
@@ -1172,46 +1171,46 @@ CPU 的每个核心就好像银行所开启的服务窗口，而顾客就好像�
 void QueueSystem::customerDeparture() {
     // 如果离开事件的发生时间比中服务时间大，我们就不需要做任何处理
     if (current_event->occur_time < total_service_time) {
-        
+
         // 顾客逗留时间 += 时间片时间
         total_customer_stay_time += TIME_SEGMENT;
-        
+
         // 如果当前服务的顾客 duration < 时间片时间，则此顾客完成服务，
         // 直接被销毁，否则就应该将为当前顾客重新插入到等待队列中，
         // 同时，还需要创建一个新的事件插入到事件列表，
         // 其发生时间是当前队列队尾顾客发生时间+时间片时间
         if (windows[current_event->event_type].getCustomerDuration() > TIME_SEGMENT) {
-            
+
             // 将新的事件插入到事件表中
             Event temp_event(
                 customer_list.getLastCustomer()->arrive_time
                 +TIME_SEGMENT);
             event_list.enqueue(temp_event);
-            
+
             // 将当前顾客重新插入到等待队列中
             Customer customer(customer_list.getLastCustomer()->arrive_time+TIME_SEGMENT, windows[current_event->event_type].getCustomerDuration() - TIME_SEGMENT);
             customer_list.enqueue(customer);
         }
-        
+
         // 如果队列中有人等待，则立即服务等待的顾客
         if (customer_list.length()) {
             Customer *customer;
             customer = customer_list.dequeue();
             windows[current_event->event_type].serveCustomer(*customer);
-            
+
             // 离开事件
             Event temp_event(
                              current_event->occur_time + customer->duration,
                              current_event->event_type
                              );
             event_list.orderEnqueue(temp_event);
-            
+
             delete customer;
         } else {
             // 如果队列没有人，且当前窗口的顾客离开了，则这个窗口是空闲的
             windows[current_event->event_type].setIdle();
         }
-        
+
     }
 }
 ```
@@ -1221,7 +1220,7 @@ void QueueSystem::customerDeparture() {
 ```
 // Queue.hpp
 
-T* &amp;getLastCustomer() {
+T* &getLastCustomer() {
         return this->rear;
 }
 ```
@@ -1231,22 +1230,22 @@ T* &amp;getLastCustomer() {
 ```c++
 // 顾客逗留时间 += 时间片时间
 total_customer_stay_time += TIME_SEGMENT;
-    
+
 // 如果当前服务的顾客 duration < 时间片时间，则此顾客完成服务，
 // 直接被销毁，否则就应该将为当前顾客重新插入到等待队列中，
 // 同时，还需要创建一个新的事件插入到事件列表，
 // 其发生时间是当前队列队尾顾客发生时间+时间片时间
 //
 if (windows[current_event->event_type].getCustomerDuration() > TIME_SEGMENT) {
-    
+
     // 将新的事件插入到事件表中
     Event temp_event(
         customer_list.getLastCustomer()->arrive_time
         +TIME_SEGMENT);
     event_list.enqueue(temp_event);
-    
+
     // 将当前顾客重新插入到等待队列中
-    Customer customer(customer_list.getLastCustomer()->arrive_time+TIME_SEGMENT, 
+    Customer customer(customer_list.getLastCustomer()->arrive_time+TIME_SEGMENT,
                       windows[current_event->event_type].getCustomerDuration() - TIME_SEGMENT);
             customer_list.enqueue(customer);
 }
