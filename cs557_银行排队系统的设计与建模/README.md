@@ -195,7 +195,6 @@ typedef struct Node Customer;
 //  ServiceWindow.hpp
 //  QueueSystem
 //
-
 #ifndef ServiceWindow_hpp
 #define ServiceWindow_hpp
 
@@ -218,7 +217,7 @@ public:
             return false;
         }
     }
-    inline void serveCustomer(Customer &amp;customer) {
+    inline void serveCustomer(Customer &customer) {
         this->customer = customer;
     }
     inline void setBusy() {
@@ -315,9 +314,9 @@ public:
     Queue();
     ~Queue();
     void clearQueue();             // 清空队列
-    T* enqueue(T &amp;node);
+    T* enqueue(T &node);
     T* dequeue();
-    T* orderEnqueue(Event &amp;event); // 只适用于事件入队
+    T* orderEnqueue(Event &event); // 只适用于事件入队
     int  length();
 private:
     T *front;  // 头结点
@@ -577,7 +576,7 @@ Queue() {
 
 // 入队时，传递节点指针，外部数据不应该由此类进行管理，所以将数据拷贝一份
 // 并返回头指针
-T* enqueue(T &amp;node) {
+T* enqueue(T &node) {
     T *new_node = new T;
     if (!new_node) {
         exit(-1);
@@ -615,7 +614,7 @@ T* dequeue() {
 //
 
 // 事件时的顺序插入，事件有自身的发生事件，应该按事件顺序进行插入
-T* orderEnqueue(Event &amp;event) {
+T* orderEnqueue(Event &event) {
     Event* temp = new Event;
     if (!temp) {
         exit(-1);
@@ -632,7 +631,7 @@ T* orderEnqueue(Event &amp;event) {
     Event *temp_event_list = this->front;
 
     // 如果有下一个事件，且下一个事件的发生时间小于要插入的时间的时间，则继续将指针后移
-    while (temp_event_list->next &amp;&amp; temp_event_list->next->occur_time < event.occur_time) {
+    while (temp_event_list->next && temp_event_list->next->occur_time < event.occur_time) {
         temp_event_list = temp_event_list->next;
     }
 
@@ -1219,7 +1218,7 @@ void QueueSystem::customerDeparture() {
 ```
 // Queue.hpp
 
-T* &amp;getLastCustomer() {
+T* &getLastCustomer() {
         return this->rear;
 }
 ```
