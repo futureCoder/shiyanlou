@@ -46,7 +46,14 @@ private:
   int total_customer_num; //总顾客数
 
   //核心成员
-  ServiceWindow* win
+  ServiceWindow* windows;
+  Queue<Customer> customer_list;
+  Queue<Event> event_list;
+  Event* current_event;
+
+  double avg_customers;
+  double avg_stay_time;
+
 };
 
 #endif
